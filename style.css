@@ -568,3 +568,10 @@ footer {
     background: #e62e43;
     transform: translateY(-3px);
 }
+
+/* Sembunyikan semua fitur admin di halaman utama pembaca */
+#openModalBtn, 
+.edit-story-btn, 
+.delete-story-btn {
+    display: none !important;
+}
