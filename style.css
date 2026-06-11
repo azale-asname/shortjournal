@@ -575,3 +575,8 @@ footer {
 .delete-story-btn {
     display: none !important;
 }
+
+/* Munculkan kembali tombol "+ Add New Story" KHUSUS di halaman admin */
+body:has(#storyForm) #openModalBtn {
+    display: block !important;
+}
