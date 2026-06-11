@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Short Journal - Admin Control</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        /* Desain Khusus Halaman Dashboard Admin */
+        .admin-header-panel {
+            max-width: 1200px;
+            margin: 140px auto 20px;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .admin-title {
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: 700;
+            border-left: 4px solid #e62e43;
+            padding-left: 15px;
+        }
+        /* Memastikan tombol edit & hapus tetap nampang di halaman admin */
+        .edit-story-btn, .delete-story-btn {
+            display: flex !important;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">SHORT<span>JOURNAL</span> (ADMIN)</div>
+        <ul class="nav-links">
+            <li><a href="index.html">View Public Site</a></li>
+        </ul>
+    </nav>
+
+    <div class="admin-header-panel">
+        <h1 class="admin-title">LORE MANAGER CONTROL</h1>
+        <button id="openModalBtn" class="btn btn-admin">+ Add New Story</button>
+    </div>
+
+    <main class="stories-section" style="padding-top: 10px;">
+        <div class="stories-grid" id="storiesContainer">
+            </div>
+    </main>
+
+    <div id="storyModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h3>Create New Journal Entry</h3>
+            
+            <form id="storyForm">
+                <input type="hidden" id="editStoryId" value="">
+                
+                <div class="form-group">
+                    <label for="storyGenre">Genre / Tag</label>
+                    <input type="text" id="storyGenre" placeholder="e.g. Dark Fantasy, Cyberpunk" required>
+                </div>
+                <div class="form-group">
+                    <label for="storyTitle">Story Title</label>
+                    <input type="text" id="storyTitle" placeholder="Enter story title..." required>
+                </div>
+                <div class="form-group">
+                    <label for="storySnippet">Story Description / Snippet</label>
+                    <textarea id="storySnippet" rows="2" placeholder="Write a brief description..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="storyContent">Full Story Content</label>
+                    <textarea id="storyContent" rows="8" placeholder="Type your full story here..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="storyBg">Background Image URL (Optional)</label>
+                    <input type="text" id="storyBg" placeholder="e.g. https://images.unsplash.com/photo-xxx...">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">PUBLISH STORY</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Story - Short Journal</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #050811;
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            position: relative;
+            transition: background 0.5s ease-in-out;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(5, 8, 17, 0.85) 0%, rgba(5, 8, 17, 0.95) 100%);
+            z-index: 1;
+        }
+        .navbar, .reading-container, .font-control-panel, .progress-container {
+            position: relative;
+            z-index: 2;
+        }
+        .reading-container {
+            max-width: 750px;
+            margin: 160px auto 100px;
+            padding: 40px;
+            background: rgba(5, 8, 17, 0.6);
+            border-radius: 12px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .back-link {
+            display: inline-block;
+            color: #e62e43;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .story-header-tag {
+            color: #e62e43;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+        .story-full-title {
+            font-size: 42px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 40px;
+            color: #ffffff;
+        }
+        .story-main-body {
+            font-family: 'Lora', serif;
+            font-size: 19px;
+            line-height: 1.9;
+            color: #e2e8f0;
+            white-space: pre-wrap;
+            transition: font-size 0.2s ease;
+        }
+        
+        /* SCROLL PROGRESS BAR MELAYANG (FITUR 3) */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.05);
+            z-index: 9999;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #e62e43;
+            width: 0%;
+        }
+
+        /* PANEL CONTROLLER FONT */
+        .font-control-panel {
+            position: fixed;
+            bottom: 35px;
+            right: 35px;
+            display: flex;
+            gap: 12px;
+            background: rgba(15, 23, 42, 0.85);
+            padding: 8px 12px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        .font-btn {
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .font-btn:hover {
+            background: #e62e43;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="myBar"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo">SHORT<span>JOURNAL</span></div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#stories">Stories</a></li>
+        </ul>
+    </nav>
+
+    <main class="reading-container">
+        <a href="index.html#stories" class="back-link">&larr; Back to Archives</a>
+        <div id="storyHeaderTag" class="story-header-tag">GENRE</div>
+        <h1 id="storyFullTitle" class="story-full-title">Loading Title...</h1>
+        <hr style="border-color: rgba(255, 255, 255, 0.1); margin-bottom: 40px;">
+        <article id="storyMainBody" class="story-main-body">
+            Loading story content...
+        </article>
+    </main>
+
+    <div class="font-control-panel">
+        <button id="decreaseFont" class="font-btn" title="Kecilkan Huruf">A-</button>
+        <button id="increaseFont" class="font-btn" title="Besarkan Huruf">A+</button>
+    </div>
+
+   <script>
+        document.addEventListener("DOMContentLoaded", async function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const storyId = urlParams.get('id');
+
+            // KONFIGURASI KUNCI CLOUD SUPABASE (SAMA KEK DI SCRIPT.JS)
+            const SUPABASE_URL = "ISI_URL_SUPABASE_LU"; 
+            const SUPABASE_ANON_KEY = "ISI_ANON_KEY_SUPABASE_LU";
+
+            const storyHeaderTag = document.getElementById("storyHeaderTag");
+            const storyFullTitle = document.getElementById("storyFullTitle");
+            const storyMainBody = document.getElementById("storyMainBody");
+
+            try {
+                // Ambil 1 cerita spesifik berdasarkan ID-nya langsung dari cloud
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/stories?id=eq.${storyId}`, {
+                    method: "GET",
+                    headers: {
+                        "apikey": SUPABASE_ANON_KEY,
+                        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                const data = await response.json();
+                const currentStory = data[0];
+
+                if (currentStory) {
+                    storyHeaderTag.innerText = currentStory.genre;
+                    storyFullTitle.innerText = currentStory.title;
+                    storyMainBody.innerText = currentStory.content;
+                    
+                    if (currentStory.bgUrl && currentStory.bgUrl.trim() !== "") {
+                        document.body.style.backgroundImage = `url('${currentStory.bgUrl}')`;
+                    }
+                } else {
+                    storyFullTitle.innerText = "Story Not Found";
+                    storyMainBody.innerText = "Maaf, cerita tidak ditemukan atau sudah dihapus dari server cloud.";
+                }
+            } catch (error) {
+                console.error("Koneksi cloud error:", error);
+                storyFullTitle.innerText = "Server Error";
+                storyMainBody.innerText = "Gagal terhubung ke server cloud. Periksa koneksi internet lu.";
+            }
+
+            // LOGIKA PENGATUR FONT
+            let currentSize = 19;
+            document.getElementById("increaseFont").addEventListener("click", function() {
+                if (currentSize < 28) { currentSize += 2; storyMainBody.style.fontSize = currentSize + "px"; }
+            });
+            document.getElementById("decreaseFont").addEventListener("click", function() {
+                if (currentSize > 14) { currentSize -= 2; storyMainBody.style.fontSize = currentSize + "px"; }
+            });
+
+            // LOGIKA SCROLL PROGRESS BAR
+            window.onscroll = function() {
+                const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrolled = (winScroll / height) * 100;
+                document.getElementById("myBar").style.width = scrolled + "%";
+            };
+        });
+    </script>
+</body>
+</html>
